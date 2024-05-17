@@ -1,32 +1,46 @@
 import { defineStore } from 'pinia'
+import { db } from '@/js/firebase';
+import { collection, onSnapshot, doc, setDoc } from "firebase/firestore";
+
+const notesCollectionRef = collection(db, "notes");
 
 export const useStoreNotes = defineStore('storeNotes', {
     state: () => {
         return {
             notes: [
-                {
-                    id: "id1",
-                    content:
-                        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut placeat quae hic ducimus quod laborum natus eius dolor error, commodi voluptates, enim labore ipsa maxime molestias illum incidunt fuga. Ut.",
-                },
-                {
-                    id: "id2",
-                    content: "Note #2",
-                },
+                // {
+                //     id: "id1",
+                //     content:
+                //         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut placeat quae hic ducimus quod laborum natus eius dolor error, commodi voluptates, enim labore ipsa maxime molestias illum incidunt fuga. Ut.",
+                // },
+                // {
+                //     id: "id2",
+                //     content: "Note #2",
+                // },
             ]
         }
     },
     actions: {
-        addNote(newNoteContent) {
+        async getNotes() {
+            onSnapshot(notesCollectionRef, (querySnapshot) => {
+                let notes = []
+                querySnapshot.forEach((doc) => {
+                    let note = {
+                        id: doc.id,
+                        content: doc.data().content
+                    }
+                    notes.push(note);
+                });
+                this.notes = notes
+            });
+        },
+        async addNote(newNoteContent) {
             let currentDate = new Date().getTime();
             let id = currentDate.toString();
 
-            let note = {
-                id: id,
-                content: newNoteContent,
-            };
-
-            this.notes.unshift(note);
+            await setDoc(doc(notesCollectionRef, id), {
+                content: newNoteContent
+            });
 
         },
         deleteNote(idToDelete) {
@@ -40,7 +54,7 @@ export const useStoreNotes = defineStore('storeNotes', {
     getters: {
         getNoteContent: (state) => {
             return (id) => {
-                return state.notes.filter(note => {return note.id === id})[0].content;
+                return state.notes.filter(note => { return note.id === id })[0].content;
             }
         },
         totalNotesCount: (state) => {
