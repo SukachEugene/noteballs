@@ -28,10 +28,15 @@
         :class="{ 'is-active': showMobileNav }"
       >
         <div class="navbar-end">
-          <RouterLink to="/" class="navbar-item has-text-white" active-class="is-active"
+          <RouterLink
+            @click="showMobileNav = false"
+            to="/"
+            class="navbar-item has-text-white"
+            active-class="is-active"
             >Notes</RouterLink
           >
           <RouterLink
+            @click="showMobileNav = false"
             to="/stats"
             class="navbar-item has-text-white"
             active-class="is-active"
@@ -59,17 +64,17 @@ const showMobileNav = ref(false);
 <style scoped>
 .navbar-item.is-active {
   background-color: rgb(33, 150, 95);
-} 
+}
 
 .navbar-menu.is-active {
-    background-color: rgb(197, 203, 130);
+  background-color: rgb(197, 203, 130);
 }
 
 @media (max-width: 1023px) {
-    .navbar-menu {
-        position: absolute;
-        left: 0;
-        width: 100%;
-    }
+  .navbar-menu {
+    position: absolute;
+    left: 0;
+    width: 100%;
+  }
 }
 </style>
