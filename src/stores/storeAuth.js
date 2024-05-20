@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { auth } from '@/js/firebase'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
+import { useStoreNotes } from '@/stores/storeNotes';
 
 
 
@@ -14,14 +15,19 @@ export const useStoreAuth = defineStore('storeAuth', {
     },
     actions: {
         init() {
+            const storeNotes = useStoreNotes();
+
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     this.user.id = user.uid;
                     this.user.email = user.email;
                     this.router.push('/');
+
+                    storeNotes.init();
                 } else {
                     this.user = {};
                     this.router.replace('/auth');
+                    storeNotes.clearNotes();
                 }
             });
         },
@@ -42,7 +48,7 @@ export const useStoreAuth = defineStore('storeAuth', {
         },
         logOutUser() {
             signOut(auth).then(() => {
-                console.log('log out');
+                // console.log('log out');
             }).catch((error) => {
                 console.log(error.message);
             });
